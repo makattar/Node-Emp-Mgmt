@@ -3,6 +3,7 @@ const router=express.Router();
 const jwt=require('jsonwebtoken');
 const fetch = require("node-fetch");
 const {Client}=require('pg');
+const Sequelize = require('sequelize');
 
 function verifyToken(req,res,next){
     if(!req.headers.authorization){
@@ -23,9 +24,24 @@ function verifyToken(req,res,next){
 router.get('/',(req,res)=>{
     res.send('From API route')
 })
-router.post('/enroll', (req, res)=> {
+router.post('/enroll', async(req, res)=> {
     console.log(req.body)
-    res.status(200).send({"message": "Data received"});
+    const {department,username,password} =req.body
+    const client=new Client({
+        user:'postgres',
+        host:'localhost',
+        database:'api',
+        password:'makattar',
+        port:5432,
+    });
+    await client.connect();
+    await client.query('INSERT INTO users (username,password,role) VALUES ($1, $2, $3)',
+     [username,password,department],async(err,data)=>{
+         await err ? res.json({status:"Failed",Error:err.stack}) : res.json({status:"Success", RowsInserted:data.rowCount})
+         await console.log(data)
+         await client.end()
+     });
+    //res.status(200).send({"message": "Data received"});
   })
 //Dummy Login 
 /*router.post('/login',(req,res)=>{
@@ -257,6 +273,7 @@ router.post('/delempFromDatabase',verifyToken,async(req,res)=>{
 router.post('/loginUser',async(req,res)=>{
     console.log("In Login user section from server")
     let userData = req.body
+    console.log(userData)
     
     //User Info
     const client=new Client({
@@ -269,7 +286,7 @@ router.post('/loginUser',async(req,res)=>{
     //Connect with database
     await client.connect();
     //Querying
-    await client.query('SELECT * FROM users WHERE email = $1 ',
+    await client.query('SELECT * FROM users WHERE username = $1 ',
      [userData.email],async(err,data)=>{
          if(err){
             res.json({status:"Failed",Error:err.stack})
@@ -292,7 +309,7 @@ router.post('/loginUser',async(req,res)=>{
                 await client.end()
             }
             else{
-                let payload = {subject: data.id}
+                let payload = {role: data.rows[0].role,username:data.rows[0].username}
                 let token = jwt.sign(payload, 'secretKey')
                 res.status(200).send({token})
                 await client.end()
@@ -300,6 +317,40 @@ router.post('/loginUser',async(req,res)=>{
         }}
      });
 
+})
+//get department list
+router.get('/dept-list',verifyToken,async(req,res)=>{
+    const client=new Client({
+        user:'postgres',
+        host:'localhost',
+        database:'api',
+        password:'makattar',
+        port:5432,
+    });
+    await client.connect();
+    const result=await client.query('SELECT deptname FROM departments ORDER BY id ASC',async(err,data)=>{
+        await err ? res.json({status:"Failed",Error:err.stack}) : res.json(data.rows)
+        await client.end()
+    });
+    
+    
+})
+//get jobtype list
+router.get('/jobtype-list',verifyToken,async(req,res)=>{
+    const client=new Client({
+        user:'postgres',
+        host:'localhost',
+        database:'api',
+        password:'makattar',
+        port:5432,
+    });
+    await client.connect();
+    const result=await client.query('SELECT jobtype FROM jobtype ORDER BY id ASC',async(err,data)=>{
+        await err ? res.json({status:"Failed",Error:err.stack}) : res.json(data.rows)
+        await client.end()
+    });
+    
+    
 })
 
 module.exports=router
