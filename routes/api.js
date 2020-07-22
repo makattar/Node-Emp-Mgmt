@@ -4,6 +4,11 @@ const jwt=require('jsonwebtoken');
 const fetch = require("node-fetch");
 const {Client}=require('pg');
 const Sequelize = require('sequelize');
+const path = require('path')
+
+
+
+
 
 function verifyToken(req,res,next){
     if(!req.headers.authorization){
@@ -24,7 +29,7 @@ function verifyToken(req,res,next){
 router.get('/',(req,res)=>{
     res.send('From API route')
 })
-router.post('/enroll', async(req, res)=> {
+/*router.post('/enroll', async(req, res)=> {
     console.log(req.body)
     const {department,username,password} =req.body
     const client=new Client({
@@ -57,7 +62,7 @@ router.post('/enroll', async(req, res)=> {
       }
 })*/
 //Database request to fetch all employees
-router.get('/emp-list',verifyToken,async(req,res)=>{
+/*router.get('/emp-list',verifyToken,async(req,res)=>{
     const client=new Client({
         user:'postgres',
         host:'localhost',
@@ -134,7 +139,7 @@ router.get('/emp-list',verifyToken,async(req,res)=>{
 //Database request to add a new employee
 router.post('/addempToDatabase',verifyToken,async(req,res)=>{
     const { name, email,dob,salary,contactno,department,jobtype,doj } = req.body
-    //departments=["Human Resource","Software Developement","Management","Networking","Security"];
+    //departments=["Human Resource","Software Development","Management","Networking","Security"];
     let departmentNo
     let jobTypeNo
     let numbercontactno
@@ -144,7 +149,7 @@ router.post('/addempToDatabase',verifyToken,async(req,res)=>{
         case "Human Resource":
             departmentNo=1
             break
-        case "Software Developement":
+        case "Software Development":
             departmentNo=2
             break
         case "Management":
@@ -204,7 +209,7 @@ router.post('/updateempToDatabase',verifyToken,async(req,res)=>{
         case "Human Resource":
             departmentNo=1
             break
-        case "Software Developement":
+        case "Software Development":
             departmentNo=2
             break
         case "Management":
@@ -317,7 +322,7 @@ router.post('/loginUser',async(req,res)=>{
         }}
      });
 
-})
+})*/
 //get department list
 router.get('/dept-list',verifyToken,async(req,res)=>{
     const client=new Client({
