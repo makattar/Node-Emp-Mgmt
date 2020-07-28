@@ -46,7 +46,7 @@ db.authenticate()
   .catch(err=>console.log('Error: '+err))
 
 app.get('/', function(req, res) {
-	res.send('Hello from server')
+	res.send('<h1>Hello from server</h1>')
 })
 //User routes
 app.use('/users',require('./routes/user'));
