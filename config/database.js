@@ -5,9 +5,9 @@ const fetch = require("node-fetch");
 const {Client}=require('pg');
 const Sequelize = require('sequelize');
 const path = require('path')
-
+require('dotenv').config();
 //Testing ORM
-module.exports = new Sequelize('api', 'postgres', 'makattar', {
+/*module.exports = new Sequelize('api', 'postgres', 'makattar', {
     host: 'localhost',
     dialect: 'postgres',
   
@@ -16,4 +16,19 @@ module.exports = new Sequelize('api', 'postgres', 'makattar', {
       min: 0,
       idle: 10000
     },
-  });
+  });*/
+
+
+//Testing ORM
+
+module.exports = new Sequelize(process.env.DB_URL,
+{
+  dialect: 'postgres',
+  protocol: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false // <<<<<<< YOU NEED THIS
+    }
+  }
+});

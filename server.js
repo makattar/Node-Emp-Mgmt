@@ -9,7 +9,9 @@ const Imgdata=require('./models/image')
 const api=require('./routes/api');
 const PORT = process.env.PORT || 3000;
 const app = express();
-const multer = require('multer')
+const multer = require('multer');
+require('dotenv').config();
+//console.log(process.env);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -23,6 +25,7 @@ app.use('/api',api)
     cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });*/
+
 const storage = multer.memoryStorage()
 const upload =multer({
   storage : storage,
