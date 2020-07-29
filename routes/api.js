@@ -4,10 +4,10 @@ const jwt=require('jsonwebtoken');
 const fetch = require("node-fetch");
 const {Client}=require('pg');
 const Sequelize = require('sequelize');
-const path = require('path')
-
-
-
+const path = require('path');
+const db=require('../config/database');
+const Jobtype=require('../models/jobtype');
+const Departments=require('../models/departments');
 
 
 function verifyToken(req,res,next){
@@ -325,7 +325,7 @@ router.post('/loginUser',async(req,res)=>{
 })*/
 //get department list
 router.get('/dept-list',verifyToken,async(req,res)=>{
-    const client=new Client({
+    /*const client=new Client({
         user:'postgres',
         host:'localhost',
         database:'api',
@@ -336,13 +336,22 @@ router.get('/dept-list',verifyToken,async(req,res)=>{
     const result=await client.query('SELECT deptname FROM departments ORDER BY id ASC',async(err,data)=>{
         await err ? res.json({status:"Failed",Error:err.stack}) : res.json(data.rows)
         await client.end()
-    });
+    });*/
+    
+    await Departments.findAll()
+    .then(departments=>{
+        res.json(departments)
+    })
+    .catch(err=>{
+        console.log('Error',err.stack)
+        res.json({status:"Failed",Error:err.stack})
+    })
     
     
 })
 //get jobtype list
 router.get('/jobtype-list',verifyToken,async(req,res)=>{
-    const client=new Client({
+    /*const client=new Client({
         user:'postgres',
         host:'localhost',
         database:'api',
@@ -353,7 +362,15 @@ router.get('/jobtype-list',verifyToken,async(req,res)=>{
     const result=await client.query('SELECT jobtype FROM jobtype ORDER BY id ASC',async(err,data)=>{
         await err ? res.json({status:"Failed",Error:err.stack}) : res.json(data.rows)
         await client.end()
-    });
+    });*/
+    await Jobtype.findAll()
+    .then(jobtypes=>{
+        res.json(jobtypes)
+    })
+    .catch(err=>{
+        console.log('Error',err.stack)
+        res.json({status:"Failed",Error:err.stack})
+    })
     
     
 })
