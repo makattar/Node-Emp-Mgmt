@@ -367,8 +367,8 @@ router.get('/jobtype-list',verifyToken,async(req,res)=>{
         await client.end()
     });*/
     await Jobtype.findAll()
-    .then(jobtypes=>{
-        res.json(jobtypes)
+    .then(jobtype=>{
+        res.json(jobtype)
     })
     .catch(err=>{
         console.log('Error',err.stack)
