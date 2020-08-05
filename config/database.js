@@ -21,7 +21,7 @@ require('dotenv').config();
 
 //Testing ORM
 //Works Only on local machine
-/*module.exports = new Sequelize(process.env.DB_URL,
+module.exports = new Sequelize(process.env.DB_URL,
 {
   dialect: 'postgres',
   protocol: 'postgres',
@@ -31,10 +31,10 @@ require('dotenv').config();
       rejectUnauthorized: false // <<<<<<< YOU NEED THIS
     }
   }
-});*/
+});
 //Works on heroku
-module.exports = new Sequelize(process.env.DATABASE_URL,
+/*module.exports = new Sequelize(process.env.DATABASE_URL,
   {
     dialect: 'postgres',
     protocol: 'postgres'
-  });
+  });*/

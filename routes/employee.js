@@ -3,6 +3,7 @@ const router=express.Router();
 const jwt=require('jsonwebtoken');
 const multiparty=require('multiparty');
 const multer = require('multer');
+const paginate = require('jw-paginate');
 //Database
 const db=require('../config/database')
 //model
@@ -51,9 +52,18 @@ router.get('/',(req,res)=>{
 })
 //Get employee list
 router.get('/emp-list',verifyToken,async(req,res)=>{
+    //console.log(req.body)
     await Employee.findAll()
         .then(employees=>{
-            res.json(employees)
+            // get page from query params or default to first page
+            const page = parseInt(req.query.page) || 1;
+            // get pager object for specified page
+            const pageSize = 5;
+            const pager = paginate(employees.length, page, pageSize);
+            // get page of items from items array
+            const pageOfItems = employees.slice(pager.startIndex, pager.endIndex + 1);
+            res.json({ pager, pageOfItems });
+            //res.json(employees)
         })
         .catch(err=>{
             console.log('Error',err.stack)
