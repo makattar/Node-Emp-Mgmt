@@ -4,10 +4,13 @@ const jwt=require('jsonwebtoken');
 const fetch = require("node-fetch");
 const {Client}=require('pg');
 const Sequelize = require('sequelize');
-const path = require('path');
+const path = require('path')
 const db=require('../config/database');
 const Jobtype=require('../models/jobtype');
 const Departments=require('../models/departments');
+
+
+
 
 
 function verifyToken(req,res,next){
@@ -374,5 +377,6 @@ router.get('/jobtype-list',verifyToken,async(req,res)=>{
     
     
 })
+
 
 module.exports=router
