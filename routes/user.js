@@ -1,6 +1,7 @@
 const express =require('express');
 const router=express.Router();
 const jwt=require('jsonwebtoken');
+const CryptoJS=require('crypto-js');
 //Database
 const db=require('../config/database')
 //model
@@ -35,7 +36,11 @@ router.get('/',(req,res)=>{
 
 router.post('/registerUser',async(req,res)=>{
     //console.log(req)
+    const enckey="makattar"
     const {department,username,password} =req.body
+    //Recieved normal convert to encrypted
+    var encpassword=CryptoJS.AES.encrypt(password.trim(),enckey.trim()).toString();
+    //console.log("At server Encrypted password is :",encpassword);
     /*const data={
         username:'lookat',
         password:'lookat',
@@ -45,7 +50,7 @@ router.post('/registerUser',async(req,res)=>{
     //Insert into model
     const insertedUser =await User.create({
         username:username,
-        password:password,
+        password:encpassword,
         role:department
     })
         .then(user=>{
@@ -62,7 +67,13 @@ router.post('/registerUser',async(req,res)=>{
 //Login user
 router.post('/loginUser',async(req,res)=>{
     const {email,password}=req.body;
-    console.log(req.body)
+    const deckey="makattar";
+    var decpass;
+    //console.log(req.body)
+    //Recieved Encrypted password convert to normal
+    decpass=CryptoJS.AES.decrypt(password.trim(),deckey.trim()).toString(CryptoJS.enc.Utf8);
+    decpass=decpass.toString()
+    //console.log("At Server Decrypted password is : ",decpass)
     //const password='bc'
     await User.findAll({
         where:{
@@ -73,8 +84,13 @@ router.post('/loginUser',async(req,res)=>{
             //const usernew=JSON.stringify(user)
             //console.log(user.length)
             //console.log(user[0]['id'])
+            //Recived encrypted password from database convert to normal
+            var passfromserver=user[0]['password']
+            //console.log("before decryption : ",passfromserver)
+            passfromserver=CryptoJS.AES.decrypt(passfromserver.trim(),deckey.trim()).toString(CryptoJS.enc.Utf8);
+            //console.log("after decryption Passfrom server :",passfromserver);
             if(user.length === 1){
-                if(user[0]['password']===password){
+                if(passfromserver===decpass){
                     let payload = {role: user[0]['role'],username:user[0]['username']}
                     let token = jwt.sign(payload, 'secretKey')
                     res.status(200).send({token})
