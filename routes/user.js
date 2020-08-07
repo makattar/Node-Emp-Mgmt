@@ -92,7 +92,7 @@ router.post('/loginUser',async(req,res)=>{
             if(user.length === 1){
                 if(passfromserver===decpass){
                     let payload = {role: user[0]['role'],username:user[0]['username']}
-                    let token = jwt.sign(payload, 'secretKey')
+                    let token = jwt.sign(payload, 'secretKey',{expiresIn: '30s'})
                     res.status(200).send({token})
                 }
                 else{res.status(400).json({status:"Failed",Error:"Invalid Password"})}
