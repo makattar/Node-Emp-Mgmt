@@ -8,7 +8,9 @@ const paginate = require('jw-paginate');
 const db=require('../config/database')
 //model
 const Employee=require('../models/employee')
-const Imgdata=require('../models/image')
+const DeletedEmployeeed=require('../models/deletedemployee')
+const Imgdata=require('../models/image');
+const DeletedEmployee = require('../models/deletedemployee');
 //Multer config
 const storage = multer.memoryStorage()
 const upload =multer({
@@ -154,6 +156,44 @@ router.post('/addempToDatabase',upload.single('img'),verifyToken,async(req,res,n
 //Delete employee profile pic and data
 router.post('/delempFromDatabase',verifyToken,async(req,res)=>{
     const {id} = req.body
+    //Fetching details of employee
+    await Employee.findAll({
+        where:{
+            id:id
+        }
+    }).then(data=>{
+        console.log(data[0]["name"]);
+        const {id,name,email,dob,salary,doj,department,contactno,jobtype}=data[0];
+        let departmentToInsert
+        switch(department){
+            case 0:
+                departmentToInsert="Human Resource"
+                break
+            case 1:
+                departmentToInsert="Software Development"
+                break
+            case 2:
+                departmentToInsert="Management"
+                break
+            case 3:
+                departmentToInsert="Networking"
+                break
+            case 4:
+                departmentToInsert="Security"
+                break
+            }
+           // console.log("Department to insert in deleted employee table ",departmentToInsert)
+           //Adding to deleted table 
+        DeletedEmployee.create({
+               name:name,
+               email:email,
+               department:departmentToInsert,
+               joindate:doj
+           }).then(data=>{console.log("Added into deleted table")})
+            .catch(err=>{console.log("Error while adding ",err.stack)})
+        
+    })
+        .catch(err=>{console.log("fetch data err")})
     //Delete image Of employee first
     await Imgdata.destroy({
         where:{
