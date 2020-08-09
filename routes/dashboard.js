@@ -121,5 +121,14 @@ router.get('/join-emp-stat',verifyToken,async(req,res)=>{
     })
     
 })
-
+router.get('/exited-emp-list',verifyToken,async(req,res)=>{
+    await DeletedEmployee.findAll({
+        attributes:['name','department','joindate','leavedate']
+    }).then(data=>{
+        //console.log(data)
+        res.json(data)
+    })
+        .catch(err=>{res.json({status:"Failed",Error:err.stack})})
+    
+})
 module.exports=router;
