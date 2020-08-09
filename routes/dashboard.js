@@ -47,6 +47,7 @@ router.get('/delete-emp-stat',async(req,res)=>{
                     [Op.gte]:moment().subtract(6,'months').toDate()
                 }
             },
+            order:[['leavedate','ASC']],
             group:'leavedate'
         }).then(data=>{
             xs=[]
@@ -101,6 +102,7 @@ router.get('/join-emp-stat',async(req,res)=>{
                 [Op.gte]:moment().subtract(6,'months').toDate()
             }
         },
+        order:[['joindate','ASC']],
         group:'joindate'
     }).then(data=>{
         xs=[]
