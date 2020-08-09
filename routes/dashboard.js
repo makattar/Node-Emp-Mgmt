@@ -37,7 +37,7 @@ router.get('/',(req,res)=>{
     res.json("Hello from dashboard")
 })
 
-router.get('/delete-emp-stat',async(req,res)=>{
+router.get('/delete-emp-stat',verifyToken,async(req,res)=>{
 
         //await DeletedEmployee.findAll({attributes:[[sequelize.literal(`DATE("joindate")`),'date'],[sequelize.literal(`COUNT(*)`),'count']],group:['joindate']}).then(data=>{console.log(data)}).catch(err=>{console.log(err)})
         await DeletedEmployee.findAll({
@@ -66,7 +66,7 @@ router.get('/delete-emp-stat',async(req,res)=>{
         })
     })
 
-router.get('/dept-wise-emp',async(req,res)=>{
+router.get('/dept-wise-emp',verifyToken,async(req,res)=>{
 
         await Employee.findAll({
             attributes:[[sequelize.fn('COUNT',sequelize.col('department')),'no_dept'],'department'],
@@ -94,7 +94,7 @@ router.get('/dept-wise-emp',async(req,res)=>{
         })
         
 })
-router.get('/join-emp-stat',async(req,res)=>{
+router.get('/join-emp-stat',verifyToken,async(req,res)=>{
     await EmployeeJoining.findAll({
         attributes:[[sequelize.fn('COUNT',sequelize.col('joindate')),'no_doj'],'joindate'],
         where:{
