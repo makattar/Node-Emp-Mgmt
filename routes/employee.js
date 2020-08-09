@@ -4,6 +4,9 @@ const jwt=require('jsonwebtoken');
 const multiparty=require('multiparty');
 const multer = require('multer');
 const paginate = require('jw-paginate');
+const sequelize = require('sequelize');
+const {Op}=require('sequelize');
+const moment=require('moment');
 //Database
 const db=require('../config/database')
 //model
@@ -11,6 +14,7 @@ const Employee=require('../models/employee')
 const DeletedEmployeeed=require('../models/deletedemployee')
 const Imgdata=require('../models/image');
 const DeletedEmployee = require('../models/deletedemployee');
+const EmployeeJoining=require('../models/employeejoining');
 //Multer config
 const storage = multer.memoryStorage()
 const upload =multer({
@@ -71,7 +75,36 @@ router.get('/emp-list',verifyToken,async(req,res)=>{
             console.log('Error',err.stack)
             res.json({status:"Failed",Error:err.stack})
         })
-})
+        /*let date_ob=new Date();
+        let date =date_ob.getDate();
+        let month = date_ob.getMonth();
+        let year=date_ob.getFullYear();
+        let datestring=year+"-"+month+"-"+date;
+        console.log(datestring);
+        //await DeletedEmployee.findAll({attributes:[[sequelize.literal(`DATE("joindate")`),'date'],[sequelize.literal(`COUNT(*)`),'count']],group:['joindate']}).then(data=>{console.log(data)}).catch(err=>{console.log(err)})
+        await DeletedEmployee.findAll({
+            attributes:[[sequelize.fn('COUNT',sequelize.col('joindate')),'no_date'],'joindate'],
+            where:{
+                joindate:{
+                    [Op.gte]:moment().subtract(6,'months').toDate()
+                }
+            },
+            group:'joindate'
+        }).then(data=>{
+            xs=[]
+            ys=[]
+            //console.log(data)
+            for (let i=0;i<data.length;i++){
+                //console.log(data[i]["joindate"])
+                //console.log(data[i].dataValues["no_date"])
+                xs.push(data[i].dataValues["joindate"])
+                ys.push(data[i].dataValues["no_date"])
+            }
+            console.log(xs,"  ",ys);
+        }).catch(err=>{
+            console.log(err)
+        })*/
+    })
 
 //Add employee data as well as profile pic
 router.post('/addempToDatabase',upload.single('img'),verifyToken,async(req,res,next)=>{
@@ -151,6 +184,11 @@ router.post('/addempToDatabase',upload.single('img'),verifyToken,async(req,res,n
     console.log("Something wrong image insertion ",err.stack)
     
     })
+
+    await EmployeeJoining.create({
+        joindate:doj
+    }).then(data=>{console.log("Inserted into joining table")})
+        .catch(err=>{console.log("Insertion Failed ",err.stack)})
   
 })
 //Delete employee profile pic and data

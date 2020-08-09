@@ -52,6 +52,8 @@ app.get('/', function(req, res) {
 app.use('/users',require('./routes/user'));
 //employees routes
 app.use('/employees',require('./routes/employee'));
+//dashboard routes
+app.use('/dashboard',require('./routes/dashboard'));
 /*app.post('/upload',(req,res)=>{
   console.log("In upload section")
   let form = new multiparty.Form();
