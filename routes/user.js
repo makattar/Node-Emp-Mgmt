@@ -95,10 +95,10 @@ router.post('/loginUser',async(req,res)=>{
                     let token = jwt.sign(payload, 'secretKey')
                     res.status(200).send({token})
                 }
-                else{res.status(400).json({status:"Failed",Error:"Invalid Password"})}
+                else{res.json({status:"Failed",Error:"Invalid Password"})}
             }
             else{
-                res.status(400).json({status:"Failed",Error:"Invalid Email or Username"})
+                res.json({status:"Failed",Error:"Invalid Email or Username"})
             }
             
         })
